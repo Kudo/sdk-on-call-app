@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "icon": "./assets/images/icon.png",
+    "orientation": "default",
+    "scheme": "sdkoncall",
+    "userInterfaceStyle": "automatic",
+    "web": {
+      "output": "server",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "android": {
+      "predictiveBackGestureEnabled": false,
+      "package": "dev.expo.kudo.sdkoncallapp",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#111827"
+      }
+    },
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#111827"
+    },
+    "experiments": {
+      "reactCompiler": true
+    },
+    "plugins": [
+      "expo-font",
+      "expo-image",
+      "expo-router",
+      "expo-web-browser",
+      "@bacons/apple-colors",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#ffffff",
+          "sounds": []
+        }
+      ],
+      "@react-native-vector-icons/material-icons",
+      "expo-sqlite",
+      "expo-splash-screen"
+    ],
+    "name": "SDK on-call",
+    "owner": "kudochien",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c1ee387f-113a-4996-bf49-7c716c28b82d"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "dev.expo.kudo.sdkoncallapp"
+    }
+  }
+}
