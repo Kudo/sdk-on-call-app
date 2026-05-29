@@ -1,8 +1,11 @@
 import { MaterialIcons } from '@react-native-vector-icons/material-icons';
 import { Tabs as WebTabs } from 'expo-router/tabs';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { useSyncNextShiftWidget } from '@/lib/widget';
 
 export default function TabsLayout() {
+  useSyncNextShiftWidget();
+
   if (process.env.EXPO_OS === 'web') {
     return (
       <WebTabs screenOptions={{ headerShown: false }}>

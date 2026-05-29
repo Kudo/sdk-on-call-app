@@ -40,7 +40,21 @@
       ],
       "@react-native-vector-icons/material-icons",
       "expo-sqlite",
-      "expo-splash-screen"
+      "expo-splash-screen",
+      "./plugins/withAndroidWidgetFix.ts",
+      [
+        "expo-widgets",
+        {
+          "widgets": [
+            {
+              "name": "NextShiftWidget",
+              "displayName": "Next On-Call Shift",
+              "description": "Your next on-call rotation at a glance",
+              "supportedFamilies": ["systemSmall", "systemMedium"]
+            }
+          ]
+        }
+      ]
     ],
     "name": "SDK on-call",
     "owner": "kudochien",
@@ -51,7 +65,8 @@
       }
     },
     "ios": {
-      "bundleIdentifier": "dev.expo.kudo.sdkoncallapp"
+      "bundleIdentifier": "dev.expo.kudo.sdkoncallapp",
+      "appleTeamId": "J35SUS5UFB"
     }
   }
 }
