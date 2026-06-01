@@ -41,7 +41,7 @@
       "@react-native-vector-icons/material-icons",
       "expo-sqlite",
       "expo-splash-screen",
-      "./plugins/withAndroidWidgetFix.ts",
+      "./plugins/withAndroidWidgetFix.js",
       [
         "expo-widgets",
         {

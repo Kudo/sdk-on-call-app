@@ -1,6 +1,6 @@
-import { withDangerousMod, type ConfigPlugin } from 'expo/config-plugins.js';
-import fs from 'node:fs';
-import path from 'node:path';
+const { withDangerousMod } = require('expo/config-plugins.js');
+const fs = require('node:fs');
+const path = require('node:path');
 
 /**
  * Workaround for an upstream `expo-widgets` bug.
@@ -24,23 +24,17 @@ import path from 'node:path';
  * `expo-widgets` has written the file, this plugin must be listed BEFORE
  * `expo-widgets` in the `plugins` array.
  */
-const withAndroidWidgetFix: ConfigPlugin = (config) => {
+const withAndroidWidgetFix = (config) => {
   return withDangerousMod(config, [
     'android',
     async (config) => {
-      const resDir = path.join(
-        config.modRequest.platformProjectRoot,
-        'app/src/main/res',
-      );
+      const resDir = path.join(config.modRequest.platformProjectRoot, 'app/src/main/res');
       const misplaced = path.join(resDir, 'xml', 'expo_widgets.xml');
       const correct = path.join(resDir, 'values', 'expo_widgets.xml');
 
       if (fs.existsSync(misplaced)) {
         await fs.promises.mkdir(path.dirname(correct), { recursive: true });
-        await fs.promises.writeFile(
-          correct,
-          await fs.promises.readFile(misplaced, 'utf8'),
-        );
+        await fs.promises.writeFile(correct, await fs.promises.readFile(misplaced, 'utf8'));
         await fs.promises.rm(misplaced);
       }
 
@@ -49,4 +43,4 @@ const withAndroidWidgetFix: ConfigPlugin = (config) => {
   ]);
 };
 
-export default withAndroidWidgetFix;
+module.exports = withAndroidWidgetFix;
