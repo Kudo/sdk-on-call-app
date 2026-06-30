@@ -5,6 +5,7 @@ export default defineSchema({
   members: defineTable({
     name: v.string(),
     order: v.number(),
+    slackUserId: v.optional(v.string()),
   }).index('by_order', ['order']),
   rotations: defineTable({
     weekStartDate: v.string(),

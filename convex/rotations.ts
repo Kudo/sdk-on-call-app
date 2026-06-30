@@ -1,5 +1,6 @@
-import { internalMutation, query } from './_generated/server';
+import { internalMutation, internalQuery, query } from './_generated/server';
 import { v } from 'convex/values';
+import { getMondayISOForTimestamp } from '../src/lib/on-call-slack';
 
 export const list = query({
   args: {},
@@ -9,10 +10,44 @@ export const list = query({
       rotations.map(async (rotation) => {
         const member = await ctx.db.get(rotation.memberId);
         if (!member) return null;
-        return { ...rotation, member };
+        // slackUserId is server-only; never expose it to public clients.
+        const { slackUserId, ...publicMember } = member;
+        return { ...rotation, member: publicMember };
       })
     );
     return rows.filter((row) => row !== null);
+  },
+});
+
+// Internal: returns the on-call member's slackUserId, so it must stay off the
+// public API. Reach it server-side via the secret-gated /on-call/current route.
+export const current = internalQuery({
+  args: {
+    now: v.number(),
+  },
+  handler: async (ctx, { now }) => {
+    const weekStartDate = getMondayISOForTimestamp(now);
+    const rotation = await ctx.db
+      .query('rotations')
+      .withIndex('by_week', (q) => q.eq('weekStartDate', weekStartDate))
+      .first();
+
+    if (!rotation) {
+      return { weekStartDate, member: null };
+    }
+
+    const member = await ctx.db.get(rotation.memberId);
+    if (!member) {
+      return { weekStartDate, member: null };
+    }
+
+    return {
+      weekStartDate,
+      member: {
+        name: member.name,
+        slackUserId: member.slackUserId,
+      },
+    };
   },
 });
 

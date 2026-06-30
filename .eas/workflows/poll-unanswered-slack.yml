@@ -1,0 +1,20 @@
+name: Poll Unanswered Slack Messages
+
+on:
+  schedule:
+    - cron: '0 15 * * *' # Daily 15:00 GMT; adjust for team timezone
+  workflow_dispatch: {}
+
+defaults:
+  tools:
+    bun: 1.3.14
+
+jobs:
+  poll_unanswered:
+    name: Poll unanswered messages
+    environment: production
+    runs_on: linux-medium
+    steps:
+      - uses: eas/checkout
+      - name: Ping on-call for unanswered Slack messages
+        run: bun ./scripts/poll-unanswered-slack.ts

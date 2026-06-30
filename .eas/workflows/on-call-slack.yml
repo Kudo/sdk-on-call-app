@@ -1,0 +1,20 @@
+name: Weekly On-Call Slack Reminder
+
+on:
+  schedule:
+    - cron: '0 14 * * 1' # Monday 14:00 GMT; adjust for team timezone
+  workflow_dispatch: {}
+
+defaults:
+  tools:
+    bun: 1.3.14
+
+jobs:
+  notify_on_call:
+    name: Notify Slack
+    environment: production
+    runs_on: linux-medium
+    steps:
+      - uses: eas/checkout
+      - name: Trigger Convex Slack reminder
+        run: bun ./scripts/notify-on-call-slack.ts
