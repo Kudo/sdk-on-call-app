@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as http from "../http.js";
 import type * as members from "../members.js";
 import type * as rotations from "../rotations.js";
 
@@ -18,6 +19,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  http: typeof http;
   members: typeof members;
   rotations: typeof rotations;
 }>;

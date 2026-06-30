@@ -2,6 +2,7 @@ export type Member = {
   _id: string;
   name: string;
   order: number;
+  slackUserId?: string;
 };
 
 export type Shift = {

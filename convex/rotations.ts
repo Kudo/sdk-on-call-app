@@ -1,5 +1,6 @@
 import { internalMutation, query } from './_generated/server';
 import { v } from 'convex/values';
+import { getMondayISOForTimestamp } from '../src/lib/on-call-slack';
 
 export const list = query({
   args: {},
@@ -13,6 +14,36 @@ export const list = query({
       })
     );
     return rows.filter((row) => row !== null);
+  },
+});
+
+export const current = query({
+  args: {
+    now: v.number(),
+  },
+  handler: async (ctx, { now }) => {
+    const weekStartDate = getMondayISOForTimestamp(now);
+    const rotation = await ctx.db
+      .query('rotations')
+      .withIndex('by_week', (q) => q.eq('weekStartDate', weekStartDate))
+      .first();
+
+    if (!rotation) {
+      return { weekStartDate, member: null };
+    }
+
+    const member = await ctx.db.get(rotation.memberId);
+    if (!member) {
+      return { weekStartDate, member: null };
+    }
+
+    return {
+      weekStartDate,
+      member: {
+        name: member.name,
+        slackUserId: member.slackUserId,
+      },
+    };
   },
 });
 
