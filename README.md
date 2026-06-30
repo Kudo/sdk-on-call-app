@@ -77,13 +77,20 @@ Configure these EAS production environment variables:
 
 ```bash
 eas env:create --environment production --name CONVEX_SITE_URL --value https://your-deployment.convex.site
+eas env:create --environment production --name CONVEX_API_TOKEN --type secret --value "$(openssl rand -hex 32)"
 eas env:create --environment production --name SLACK_BOT_TOKEN --type secret --value xoxb-your-bot-token
 eas env:create --environment production --name SLACK_REMINDER_CHANNEL_ID --value C12345678
 eas env:create --environment production --name SLACK_POLL_CHANNEL_IDS --value C12345678,C23456789
 eas env:create --environment production --name SLACK_POLL_AUTHOR_USER_IDS --value U12345678,U23456789
 ```
 
-Slack secrets stay in EAS. Convex only serves the current on-call member and Slack user ID from `/on-call/current`; `scripts/notify-on-call-slack.ts` builds the message and posts to Slack from the EAS runner. The bot needs the `chat:write` OAuth scope and must be in the target channel.
+The `/on-call/current` Convex endpoint returns Slack user IDs, so it is gated by a shared secret. Set the **same** value on the Convex deployment so it can validate incoming requests:
+
+```bash
+npx convex env set CONVEX_API_TOKEN <same-value-as-eas>
+```
+
+Slack secrets stay in EAS. The `/on-call/current` endpoint serves the current on-call member and Slack user ID only to callers that present `CONVEX_API_TOKEN`; the public app reads names and rotation from Convex but never receives Slack user IDs. `scripts/notify-on-call-slack.ts` builds the message and posts to Slack from the EAS runner. The bot needs the `chat:write` OAuth scope and must be in the target channel.
 
 The daily polling workflow lives in `.eas/workflows/poll-unanswered-slack.yml`. It reads recent top-level user messages from `SLACK_POLL_CHANNEL_IDS`, only considers messages whose author is listed in `SLACK_POLL_AUTHOR_USER_IDS` or whose text contains a literal marker from `POLLING_MESSAGE_PATTERNS` in `src/lib/slack-poll.ts`, and replies in-thread to matching messages with no replies. Add multiple code-defined markers by editing that array, for example `['[Question]', '[Help]']`; marker matching is case-insensitive, so `[Question] someone asked...` matches `[Question]`. The polling rule is code-defined in seconds: scan the last 48 hours of channel history with Slack cursor pagination, only ping messages that are at least 24 hours old, and read up to 200 messages per page. To enable polling, add `channels:read` and `channels:history` for public channels, and `groups:read` and `groups:history` for private channels. Invite the bot to every channel it should post in.
 

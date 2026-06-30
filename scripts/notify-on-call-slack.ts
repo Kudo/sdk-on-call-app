@@ -22,6 +22,7 @@ function requireEnv(name: string) {
 }
 
 const convexSiteUrl = requireEnv('CONVEX_SITE_URL').replace(/\/+$/, '');
+const convexApiToken = requireEnv('CONVEX_API_TOKEN');
 const slackBotToken = requireEnv('SLACK_BOT_TOKEN');
 const slackChannelId = requireEnv('SLACK_REMINDER_CHANNEL_ID');
 
@@ -72,6 +73,9 @@ async function postSlack(payload: SlackMessagePayload) {
 async function fetchCurrentOnCall() {
   const response = await fetch(`${convexSiteUrl}/on-call/current`, {
     method: 'GET',
+    headers: {
+      authorization: `Bearer ${convexApiToken}`,
+    },
   });
 
   const text = await response.text();

@@ -4,7 +4,9 @@ import { v } from 'convex/values';
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query('members').withIndex('by_order').collect();
+    const members = await ctx.db.query('members').withIndex('by_order').collect();
+    // slackUserId is server-only; never expose it to public clients.
+    return members.map(({ slackUserId, ...member }) => member);
   },
 });
 

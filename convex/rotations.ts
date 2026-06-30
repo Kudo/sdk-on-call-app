@@ -1,4 +1,4 @@
-import { internalMutation, query } from './_generated/server';
+import { internalMutation, internalQuery, query } from './_generated/server';
 import { v } from 'convex/values';
 import { getMondayISOForTimestamp } from '../src/lib/on-call-slack';
 
@@ -10,14 +10,18 @@ export const list = query({
       rotations.map(async (rotation) => {
         const member = await ctx.db.get(rotation.memberId);
         if (!member) return null;
-        return { ...rotation, member };
+        // slackUserId is server-only; never expose it to public clients.
+        const { slackUserId, ...publicMember } = member;
+        return { ...rotation, member: publicMember };
       })
     );
     return rows.filter((row) => row !== null);
   },
 });
 
-export const current = query({
+// Internal: returns the on-call member's slackUserId, so it must stay off the
+// public API. Reach it server-side via the secret-gated /on-call/current route.
+export const current = internalQuery({
   args: {
     now: v.number(),
   },

@@ -47,6 +47,7 @@ function readOptionalEnv(name: string) {
 }
 
 const convexSiteUrl = requireEnv('CONVEX_SITE_URL').replace(/\/+$/, '');
+const convexApiToken = requireEnv('CONVEX_API_TOKEN');
 const slackBotToken = requireEnv('SLACK_BOT_TOKEN');
 const channelIds = parseSlackChannelIds(requireEnv('SLACK_POLL_CHANNEL_IDS'));
 const authorUserIds = new Set(parseSlackUserIds(readOptionalEnv('SLACK_POLL_AUTHOR_USER_IDS')));
@@ -90,6 +91,9 @@ async function main() {
 async function fetchCurrentOnCall() {
   const response = await fetch(`${convexSiteUrl}/on-call/current`, {
     method: 'GET',
+    headers: {
+      authorization: `Bearer ${convexApiToken}`,
+    },
   });
 
   const text = await response.text();
