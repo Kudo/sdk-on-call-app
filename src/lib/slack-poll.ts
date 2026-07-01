@@ -6,9 +6,16 @@ export type SlackHistoryMessage = {
   ts?: string;
   thread_ts?: string;
   reply_count?: number;
+  reactions?: SlackMessageReaction[];
   user?: string;
   bot_id?: string;
   text?: string;
+};
+
+type SlackMessageReaction = {
+  name?: string;
+  users?: string[];
+  count?: number;
 };
 
 export type SlackHistoryPaginationResponse = {
@@ -44,7 +51,17 @@ export function isTopLevelUserMessage(message: SlackHistoryMessage) {
 }
 
 export function isUnansweredTopLevelMessage(message: SlackHistoryMessage) {
-  return isTopLevelUserMessage(message) && !message.reply_count;
+  return (
+    isTopLevelUserMessage(message) && !message.reply_count && !hasSlackMessageReaction(message)
+  );
+}
+
+function hasSlackMessageReaction(message: SlackHistoryMessage) {
+  return (
+    message.reactions?.some((reaction) => {
+      return (reaction.count ?? reaction.users?.length ?? 0) > 0;
+    }) ?? false
+  );
 }
 
 export function getSlackMessageTimestampMs(message: SlackHistoryMessage) {

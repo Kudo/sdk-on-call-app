@@ -93,6 +93,17 @@ describe('isUnansweredTopLevelMessage()', () => {
       })
     ).toBe(false);
   });
+
+  it('should return false when a top-level user message has emoji reactions', () => {
+    expect(
+      isUnansweredTopLevelMessage({
+        type: 'message',
+        ts: '1.000',
+        user: 'U123',
+        reactions: [{ name: 'eyes', users: ['U456'], count: 1 }],
+      })
+    ).toBe(false);
+  });
 });
 
 describe('getSlackMessageTimestampMs()', () => {
