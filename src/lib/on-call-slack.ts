@@ -39,8 +39,8 @@ const dayFormatter = new Intl.DateTimeFormat('en-US', {
   timeZone: 'UTC',
 });
 
-const ROTATION_URL = 'https://sdk-on-call.expo.app/';
-const ROTATION_SLACK_LINK = `<${ROTATION_URL}|Future rotation>`;
+const ROTATION_URL = 'https://sdk-on-call.expo.app/rotations';
+const ROTATION_SLACK_LINK = `<${ROTATION_URL}|Future rotations>`;
 
 export function getMondayISOForTimestamp(timestampMs: number) {
   const date = new Date(timestampMs);
@@ -64,7 +64,7 @@ export function buildWeeklyOnCallSlackPayload(
 ): SlackMessagePayload {
   const member = getSlackMemberDisplay(assignment.member);
   const weekLabel = getSlackWeekLabel(assignment.weekStartDate);
-  const text = `SDK on-call: ${member}. ${weekLabel}. Future rotation: ${ROTATION_URL}`;
+  const text = `SDK on-call: ${member}. ${weekLabel}. Future rotations: ${ROTATION_URL}`;
 
   return {
     text,

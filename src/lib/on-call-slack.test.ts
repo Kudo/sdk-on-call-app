@@ -52,12 +52,12 @@ describe('buildWeeklyOnCallSlackPayload()', () => {
     });
 
     expect(payload.text).toBe(
-      'SDK on-call: <@U12345>. From Mon, May 4 to Sun, May 10. Future rotation: https://sdk-on-call.expo.app/'
+      'SDK on-call: <@U12345>. From Mon, May 4 to Sun, May 10. Future rotations: https://sdk-on-call.expo.app/rotations'
     );
     expect(payload.blocks).toHaveLength(1);
     expect(payload.blocks[0]!.type).toBe('section');
     expect(payload.blocks[0]!.text.text).toBe(
-      '*SDK on-call: <@U12345>*\nFrom Mon, May 4 to Sun, May 10\n<https://sdk-on-call.expo.app/|Future rotation>'
+      '*SDK on-call: <@U12345>*\nFrom Mon, May 4 to Sun, May 10\n<https://sdk-on-call.expo.app/rotations|Future rotations>'
     );
   });
 });
