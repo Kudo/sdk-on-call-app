@@ -2,7 +2,7 @@ name: Weekly On-Call Slack Reminder
 
 on:
   schedule:
-    - cron: '0 14 * * 1' # Monday 14:00 GMT; adjust for team timezone
+    - cron: '0 6 * * 1' # Monday 06:00 GMT; adjust for team timezone
   workflow_dispatch: {}
 
 defaults:
