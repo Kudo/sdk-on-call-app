@@ -3,8 +3,8 @@ import { useQuery } from 'convex/react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { api } from '@convex/_generated/api';
-import MemberAvatar from '@/components/member-avatar';
-import Section from '@/components/section';
+import MemberAvatar from '@/components/MemberAvatar';
+import Section from '@/components/Section';
 import type { Member } from '@/lib/rotation';
 
 export default function TeamRoute() {
@@ -40,7 +40,7 @@ export default function TeamRoute() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1 },
+  scroll: { flex: 1, backgroundColor: AC.systemGroupedBackground as any },
   container: { padding: 16, gap: 28 },
   memberList: { gap: 8 },
   memberRow: {

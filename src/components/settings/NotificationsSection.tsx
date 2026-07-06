@@ -1,5 +1,4 @@
 import * as AC from '@bacons/apple-colors';
-import { DateTimePicker } from '@expo/ui/community/datetime-picker';
 import {
   ActivityIndicator,
   Platform,
@@ -9,24 +8,25 @@ import {
   Text,
   View,
 } from 'react-native';
-import Section from '@/components/section';
+import Section from '@/components/Section';
 import {
   formatReminderSchedule,
   formatReminderTimeOnly,
   formatReminderWeekdayOnly,
 } from '@/lib/reminder-schedule';
+import NativeDateTimePicker from './NativeDateTimePicker';
 
 type Props = {
   notifEnabled: boolean;
   notifLoading: boolean;
   reminderSchedule: Date;
   scheduledCount: number;
-  showAndroidTimePicker: boolean;
+  showTimePicker: boolean;
   onToggleNotifications: (value: boolean) => void;
   onPressWeekday: () => void;
   onPressTime: () => void;
-  onAndroidTimeChange: (date: Date) => void;
-  onDismissAndroidTimePicker: () => void;
+  onTimeChange: (date: Date) => void;
+  onDismissTimePicker: () => void;
 };
 
 export default function NotificationsSection({
@@ -34,12 +34,12 @@ export default function NotificationsSection({
   notifLoading,
   reminderSchedule,
   scheduledCount,
-  showAndroidTimePicker,
+  showTimePicker,
   onToggleNotifications,
   onPressWeekday,
   onPressTime,
-  onAndroidTimeChange,
-  onDismissAndroidTimePicker,
+  onTimeChange,
+  onDismissTimePicker,
 }: Props) {
   return (
     <Section
@@ -87,16 +87,11 @@ export default function NotificationsSection({
                     </Text>
                   </Pressable>
                 </View>
-                {showAndroidTimePicker && Platform.OS === 'android' && (
-                  <DateTimePicker
+                {showTimePicker && Platform.OS === 'android' && (
+                  <NativeDateTimePicker
                     value={reminderSchedule}
-                    mode="time"
-                    display="default"
-                    is24Hour={false}
-                    positiveButton={{ label: 'Set' }}
-                    negativeButton={{ label: 'Cancel' }}
-                    onDismiss={onDismissAndroidTimePicker}
-                    onValueChange={(_, date) => onAndroidTimeChange(date)}
+                    onValueChange={onTimeChange}
+                    onDismiss={onDismissTimePicker}
                   />
                 )}
               </>

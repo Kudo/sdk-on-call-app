@@ -1,9 +1,10 @@
+import * as AC from '@bacons/apple-colors';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import EmptyState from '@/components/empty-state';
-import HeroShiftCard from '@/components/hero-shift-card';
-import Section from '@/components/section';
-import WeekCard from '@/components/week-card';
+import EmptyState from '@/components/EmptyState';
+import HeroShiftCard from '@/components/HeroShiftCard';
+import Section from '@/components/Section';
+import WeekCard from '@/components/WeekCard';
 import { isSameWeek, type Shift } from '@/lib/rotation';
 
 type EmptyStateContent = {
@@ -74,7 +75,7 @@ export default function RotationSchedule({
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1 },
+  scroll: { flex: 1, backgroundColor: AC.systemGroupedBackground as any },
   container: { padding: 16, gap: 24 },
   list: { gap: 8 },
 });

@@ -3,8 +3,8 @@ import { useQuery } from 'convex/react';
 import { Stack } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '@convex/_generated/api';
-import LoadingScreen from '@/components/loading-screen';
-import RotationSchedule from '@/components/rotation-schedule';
+import LoadingScreen from '@/components/LoadingScreen';
+import RotationSchedule from '@/components/RotationSchedule';
 import { getStoredShifts } from '@/lib/rotation';
 import { getStoredMemberId } from '@/lib/storage';
 

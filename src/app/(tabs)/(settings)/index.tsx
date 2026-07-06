@@ -1,3 +1,4 @@
+import * as AC from '@bacons/apple-colors';
 import { useQuery } from 'convex/react';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
@@ -5,12 +6,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { api } from '@convex/_generated/api';
-import EmptyState from '@/components/empty-state';
-import LoadingScreen from '@/components/loading-screen';
-import AboutSection from '@/components/settings/about-section';
-import NotificationsSection from '@/components/settings/notifications-section';
-import ProfileSection from '@/components/settings/profile-section';
-import ReminderSheets from '@/components/settings/reminder-sheets';
+import EmptyState from '@/components/EmptyState';
+import LoadingScreen from '@/components/LoadingScreen';
+import AboutSection from '@/components/settings/AboutSection';
+import NotificationsSection from '@/components/settings/NotificationsSection';
+import ProfileSection from '@/components/settings/ProfileSection';
+import ReminderSheets from '@/components/settings/ReminderSheets';
 import {
   cancelShiftNotifications,
   getNotificationPermissionGranted,
@@ -123,7 +124,7 @@ export default function SettingsRoute() {
     await handleReminderScheduleChange(nextDate);
   }
 
-  async function handleAndroidTimeChange(date: Date) {
+  async function handleReminderTimeChange(date: Date) {
     const nextDate = new Date(reminderSchedule);
     nextDate.setHours(date.getHours(), date.getMinutes(), 0, 0);
     setShowTimeSheet(false);
@@ -132,7 +133,7 @@ export default function SettingsRoute() {
 
   async function handleConfirmDraftReminderTime() {
     setShowTimeSheet(false);
-    await handleAndroidTimeChange(draftReminderTime);
+    await handleReminderTimeChange(draftReminderTime);
   }
 
   async function handleToggleNotifications(value: boolean) {
@@ -222,7 +223,7 @@ export default function SettingsRoute() {
           notifLoading={notifLoading}
           reminderSchedule={reminderSchedule}
           scheduledCount={scheduledCount}
-          showAndroidTimePicker={showTimeSheet}
+          showTimePicker={showTimeSheet}
           onToggleNotifications={handleToggleNotifications}
           onPressWeekday={() => {
             setShowWeekdaySheet(true);
@@ -233,8 +234,8 @@ export default function SettingsRoute() {
             setShowTimeSheet(true);
             setShowWeekdaySheet(false);
           }}
-          onAndroidTimeChange={handleAndroidTimeChange}
-          onDismissAndroidTimePicker={() => setShowTimeSheet(false)}
+          onTimeChange={handleReminderTimeChange}
+          onDismissTimePicker={() => setShowTimeSheet(false)}
         />
         <AboutSection teamSize={members?.length} myShiftsCount={myShifts.length} />
       </ScrollView>
@@ -257,6 +258,6 @@ export default function SettingsRoute() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1 },
+  scroll: { flex: 1, backgroundColor: AC.systemGroupedBackground as any },
   container: { padding: 16, gap: 28 },
 });

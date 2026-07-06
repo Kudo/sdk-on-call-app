@@ -1,7 +1,7 @@
 import * as AC from '@bacons/apple-colors';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import MemberAvatar from '@/components/member-avatar';
-import Section from '@/components/section';
+import MemberAvatar from '@/components/MemberAvatar';
+import Section from '@/components/Section';
 import type { Member } from '@/lib/rotation';
 
 type Props = {

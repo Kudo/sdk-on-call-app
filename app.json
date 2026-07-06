@@ -57,7 +57,8 @@
             }
           ]
         }
-      ]
+      ],
+      "expo-status-bar"
     ],
     "name": "SDK on-call",
     "owner": "kudochien",

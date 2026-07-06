@@ -1,6 +1,6 @@
 import * as AC from '@bacons/apple-colors';
 import { StyleSheet, Text, View } from 'react-native';
-import MemberAvatar from './member-avatar';
+import MemberAvatar from './MemberAvatar';
 import { getWeekLabel, type Shift } from '@/lib/rotation';
 
 type Props = {

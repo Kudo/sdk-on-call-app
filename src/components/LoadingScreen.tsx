@@ -16,6 +16,6 @@ export default function LoadingScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1 },
+  scroll: { flex: 1, backgroundColor: AC.systemGroupedBackground as any },
   centered: { flexGrow: 1, justifyContent: 'center', alignItems: 'center' },
 });

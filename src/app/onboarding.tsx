@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { api } from '@convex/_generated/api';
-import MemberAvatar from '@/components/member-avatar';
-import Section from '@/components/section';
+import MemberAvatar from '@/components/MemberAvatar';
+import Section from '@/components/Section';
 import type { Member } from '@/lib/rotation';
 import { setStoredMemberId } from '@/lib/storage';
 

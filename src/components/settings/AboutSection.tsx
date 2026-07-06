@@ -1,6 +1,6 @@
 import * as AC from '@bacons/apple-colors';
 import { StyleSheet, Text, View } from 'react-native';
-import Section from '@/components/section';
+import Section from '@/components/Section';
 
 type Props = {
   teamSize: number | undefined;

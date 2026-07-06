@@ -1,6 +1,6 @@
 import 'expo-sqlite/localStorage/install';
 
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from '@/components/ThemeProvider';
 import { configureNotificationHandler } from '@/lib/notifications';
 import { ConvexProvider, ConvexReactClient } from 'convex/react';
 import { useFonts, type FontSource } from 'expo-font';

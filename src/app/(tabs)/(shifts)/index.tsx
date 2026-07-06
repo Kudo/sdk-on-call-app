@@ -1,13 +1,14 @@
+import * as AC from '@bacons/apple-colors';
 import { useQuery } from 'convex/react';
 import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { api } from '@convex/_generated/api';
-import CountdownCard from '@/components/countdown-card';
-import EmptyState from '@/components/empty-state';
-import LoadingScreen from '@/components/loading-screen';
-import Section from '@/components/section';
-import WeekCard from '@/components/week-card';
+import CountdownCard from '@/components/CountdownCard';
+import EmptyState from '@/components/EmptyState';
+import LoadingScreen from '@/components/LoadingScreen';
+import Section from '@/components/Section';
+import WeekCard from '@/components/WeekCard';
 import { getStoredShifts, isSameWeek } from '@/lib/rotation';
 import { getStoredMemberId } from '@/lib/storage';
 
@@ -67,7 +68,7 @@ export default function ShiftsRoute() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1 },
+  scroll: { flex: 1, backgroundColor: AC.systemGroupedBackground as any },
   container: { padding: 16, gap: 24 },
   list: { gap: 8 },
 });
