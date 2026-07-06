@@ -16,7 +16,7 @@ export default function HeroShiftCard({ shift, isMe = false }: Props) {
       <Text style={styles.week}>{getWeekLabel(shift.monday)}</Text>
       {isMe && (
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>That's you!</Text>
+          <Text style={styles.badgeText}>{"That's you!"}</Text>
         </View>
       )}
     </View>

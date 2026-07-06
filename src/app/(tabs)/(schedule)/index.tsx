@@ -10,11 +10,7 @@ import { getStoredMemberId } from '@/lib/storage';
 export default function ScheduleRoute() {
   const members = useQuery(api.members.list);
   const rotations = useQuery(api.rotations.list);
-  const [myId, setMyId] = useState<string | null>(null);
-
-  useEffect(() => {
-    setMyId(getStoredMemberId());
-  }, []);
+  const [myId] = useState(() => getStoredMemberId());
 
   const shifts = useMemo(() => {
     if (!rotations) return [];

@@ -1,7 +1,7 @@
 import * as AC from '@bacons/apple-colors';
 import { useQuery } from 'convex/react';
 import { Stack } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { api } from '@convex/_generated/api';
 import LoadingScreen from '@/components/LoadingScreen';
 import RotationSchedule from '@/components/RotationSchedule';
@@ -10,11 +10,7 @@ import { getStoredMemberId } from '@/lib/storage';
 
 export default function RotationsRoute() {
   const rotations = useQuery(api.rotations.list);
-  const [myId, setMyId] = useState<string | null>(null);
-
-  useEffect(() => {
-    setMyId(getStoredMemberId());
-  }, []);
+  const [myId] = useState(() => getStoredMemberId());
 
   const shifts = useMemo(() => {
     if (!rotations) return [];

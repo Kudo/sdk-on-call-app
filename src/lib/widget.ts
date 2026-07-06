@@ -23,11 +23,7 @@ export function updateNextShiftWidget(myShifts: Shift[], now: Date = new Date())
  */
 export function useSyncNextShiftWidget(): void {
   const rotations = useQuery(api.rotations.list);
-  const [myId, setMyId] = useState<string | null>(null);
-
-  useEffect(() => {
-    setMyId(getStoredMemberId());
-  }, []);
+  const [myId] = useState(() => getStoredMemberId());
 
   useEffect(() => {
     if (Platform.OS !== 'ios' || !rotations || !myId) return;

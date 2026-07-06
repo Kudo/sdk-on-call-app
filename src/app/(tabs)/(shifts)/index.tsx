@@ -1,6 +1,6 @@
 import * as AC from '@bacons/apple-colors';
 import { useQuery } from 'convex/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { api } from '@convex/_generated/api';
@@ -15,12 +15,8 @@ import { getStoredMemberId } from '@/lib/storage';
 export default function ShiftsRoute() {
   const members = useQuery(api.members.list);
   const rotations = useQuery(api.rotations.list);
-  const [myId, setMyId] = useState<string | null>(null);
+  const [myId] = useState(() => getStoredMemberId());
   const insets = useSafeAreaInsets();
-
-  useEffect(() => {
-    setMyId(getStoredMemberId());
-  }, []);
 
   const myShifts = useMemo(() => {
     if (!rotations || !myId) return [];

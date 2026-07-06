@@ -42,9 +42,8 @@ export default function SettingsRoute() {
   const insets = useSafeAreaInsets();
   const members = useQuery(api.members.list);
   const rotations = useQuery(api.rotations.list);
-  const [myId, setMyId] = useState<string | null>(null);
-  const [identityLoaded, setIdentityLoaded] = useState(false);
-  const [notifEnabled, setNotifEnabled] = useState(false);
+  const [myId] = useState(() => getStoredMemberId());
+  const [notifEnabled, setNotifEnabled] = useState(() => getLocalRemindersEnabled());
   const [notifLoading, setNotifLoading] = useState(false);
   const [reminderSchedule, setReminderSchedule] = useState(() =>
     reminderScheduleToDate(getLocalReminderSchedule())
@@ -56,9 +55,6 @@ export default function SettingsRoute() {
 
   useEffect(() => {
     const remindersEnabled = getLocalRemindersEnabled();
-    setMyId(getStoredMemberId());
-    setNotifEnabled(remindersEnabled);
-    setIdentityLoaded(true);
 
     if (isNotificationSupported && remindersEnabled) {
       getNotificationPermissionGranted()
@@ -191,7 +187,7 @@ export default function SettingsRoute() {
     ]);
   }
 
-  const isLoading = members === undefined || rotations === undefined || !identityLoaded;
+  const isLoading = members === undefined || rotations === undefined;
   const isNativeSheetPresented =
     Platform.OS !== 'web' && (showWeekdaySheet || (showTimeSheet && Platform.OS === 'ios'));
 
