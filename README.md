@@ -61,6 +61,28 @@ All database writes go through scripts that call Convex internal mutations:
 - `scripts/add-rotation.ts` writes one stored weekly rotation row per provided name (and adds any unknown names to the roster).
 - `scripts/swap-week.ts` calls the same internal mutation with a single name to reassign one week.
 
+## Rotation API
+
+The public `rotations:list` query accepts an optional `scope`:
+
+| Scope | Result |
+| --- | --- |
+| `upcoming` (default) | This week and all stored future weeks |
+| `current` | This week's assignment, as a one-element array or `[]` if unassigned |
+| `all` | All stored weeks, including past rotations |
+
+Results are ordered by week and include member names, but never Slack user IDs. No authentication is required. For example, fetch the current on-call assignment:
+
+```bash
+curl -sS 'https://robust-stingray-25.convex.cloud/api/query' \
+  -H 'Content-Type: application/json' \
+  -d '{"path":"rotations:list","args":{"scope":"current"},"format":"json"}'
+```
+
+Scopes use Monday–Sunday UTC weeks by default, calculated from server `Date.now()` when the query executes. An optional `weekStartDate` (`YYYY-MM-DD`, must be a Monday) anchors `current` or `upcoming` to a particular week. The app's `useRotations` hook passes the device's local Monday on render, preserving local calendar behavior. `all` ignores a valid week anchor.
+
+Real-time week rollover is not guaranteed: time passing alone does not rerun a Convex subscription. No cron, clock table, or initialization step is required. Existing clients that need history must now request `scope: 'all'`.
+
 ## Reminders
 
 Users enable local reminders in Settings. This schedules notifications on the device without writing to Convex.
@@ -104,13 +126,13 @@ If a member does not have a Slack user ID, the reminder falls back to their disp
 
 ## Tests
 
-Pure logic is covered by `bun test`:
+Pure logic and Convex queries are covered by `bun test`:
 
 ```bash
 bun test
 ```
 
-The current suite lives in `src/lib/rotation.test.ts` and exercises week math (`getMondayOf`, `getWeekLabel`, `isSameWeek`) plus the rotation→shift transforms.
+Tests in `src/lib/` cover calendar math, shift transforms, widgets, and Slack message logic. `convex/rotations.test.ts` uses `convex-test` to cover query scopes, week rollover, timezone anchors, missing data, and public member privacy.
 
 ## Code Style
 

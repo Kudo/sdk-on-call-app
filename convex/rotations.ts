@@ -3,9 +3,32 @@ import { v } from 'convex/values';
 import { getMondayISOForTimestamp } from '../src/lib/on-call-slack';
 
 export const list = query({
-  args: {},
-  handler: async (ctx) => {
-    const rotations = await ctx.db.query('rotations').withIndex('by_week').collect();
+  args: {
+    scope: v.optional(v.union(v.literal('upcoming'), v.literal('current'), v.literal('all'))),
+    weekStartDate: v.optional(v.string()),
+  },
+  handler: async (ctx, { scope = 'upcoming', weekStartDate }) => {
+    if (weekStartDate !== undefined) {
+      const timestamp = Date.parse(`${weekStartDate}T00:00:00Z`);
+      if (
+        !/^\d{4}-\d{2}-\d{2}$/.test(weekStartDate) ||
+        !Number.isFinite(timestamp) ||
+        getMondayISOForTimestamp(timestamp) !== weekStartDate
+      ) {
+        throw new Error('weekStartDate must be a Monday in YYYY-MM-DD format');
+      }
+    }
+    if (scope !== 'all' && weekStartDate === undefined) {
+      weekStartDate = getMondayISOForTimestamp(Date.now());
+    }
+    const rotationQuery = ctx.db.query('rotations').withIndex('by_week', (q) => {
+      if (scope === 'all') return q;
+      return scope === 'current'
+        ? q.eq('weekStartDate', weekStartDate!)
+        : q.gte('weekStartDate', weekStartDate!);
+    });
+    const rotations =
+      scope === 'current' ? await rotationQuery.take(1) : await rotationQuery.collect();
     const rows = await Promise.all(
       rotations.map(async (rotation) => {
         const member = await ctx.db.get(rotation.memberId);

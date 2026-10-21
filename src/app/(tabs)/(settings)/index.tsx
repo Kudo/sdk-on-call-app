@@ -1,3 +1,4 @@
+import { useRotations } from '@/lib/use-rotations';
 import * as AC from '@bacons/apple-colors';
 import { useQuery } from 'convex/react';
 import * as Haptics from 'expo-haptics';
@@ -41,7 +42,7 @@ export default function SettingsRoute() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const members = useQuery(api.members.list);
-  const rotations = useQuery(api.rotations.list);
+  const rotations = useRotations();
   const [myId] = useState(() => getStoredMemberId());
   const [notifEnabled, setNotifEnabled] = useState(() => getLocalRemindersEnabled());
   const [notifLoading, setNotifLoading] = useState(false);

@@ -1,3 +1,4 @@
+import { useRotations } from '@/lib/use-rotations';
 import { useQuery } from 'convex/react';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '@convex/_generated/api';
@@ -9,7 +10,7 @@ import { getStoredMemberId } from '@/lib/storage';
 
 export default function ScheduleRoute() {
   const members = useQuery(api.members.list);
-  const rotations = useQuery(api.rotations.list);
+  const rotations = useRotations();
   const [myId] = useState(() => getStoredMemberId());
 
   const shifts = useMemo(() => {
