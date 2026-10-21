@@ -2,9 +2,6 @@ import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
 export default defineSchema({
-  rotationWeek: defineTable({
-    weekStartDate: v.string(),
-  }),
   members: defineTable({
     name: v.string(),
     order: v.number(),

@@ -19,11 +19,7 @@ export const list = query({
       }
     }
     if (scope !== 'all' && weekStartDate === undefined) {
-      const currentWeek = await ctx.db.query('rotationWeek').unique();
-      if (!currentWeek) {
-        throw new Error('Rotation week is not initialized; run rotations:refreshCurrentWeek');
-      }
-      weekStartDate = currentWeek.weekStartDate;
+      weekStartDate = getMondayISOForTimestamp(Date.now());
     }
     const rotationQuery = ctx.db.query('rotations').withIndex('by_week', (q) => {
       if (scope === 'all') return q;
@@ -43,20 +39,6 @@ export const list = query({
       })
     );
     return rows.filter((row) => row !== null);
-  },
-});
-
-// A database-backed week invalidates subscriptions when the calendar rolls over.
-export const refreshCurrentWeek = internalMutation({
-  args: {},
-  handler: async (ctx) => {
-    const weekStartDate = getMondayISOForTimestamp(Date.now());
-    const currentWeek = await ctx.db.query('rotationWeek').unique();
-    if (!currentWeek) {
-      await ctx.db.insert('rotationWeek', { weekStartDate });
-    } else if (currentWeek.weekStartDate !== weekStartDate) {
-      await ctx.db.patch(currentWeek._id, { weekStartDate });
-    }
   },
 });
 

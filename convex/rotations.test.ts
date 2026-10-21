@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, setSystemTime } from 'bun:test';
 import { convexTest, type TestConvex } from 'convex-test';
-import { api, internal } from './_generated/api';
+import { api } from './_generated/api';
 import schema from './schema';
 
 const modules = {
@@ -14,7 +14,6 @@ describe('Listing rotations', () => {
   beforeEach(async () => {
     setSystemTime(new Date('2026-10-22T12:00:00Z'));
     t = convexTest(schema, modules);
-    await t.mutation(internal.rotations.refreshCurrentWeek, {});
     await t.run(async (ctx) => {
       const memberId = await ctx.db.insert('members', {
         name: 'Alice',
@@ -71,13 +70,12 @@ describe('Listing rotations', () => {
     }
   });
 
-  it('should switch weeks when the scheduled refresh runs on monday', async () => {
+  it('should use the server date when queried across monday midnight UTC', async () => {
     setSystemTime(new Date('2026-10-25T23:59:59.999Z'));
     expect((await t.query(api.rotations.list, { scope: 'current' }))[0].weekStartDate).toBe(
       '2026-10-19'
     );
     setSystemTime(new Date('2026-10-26T00:00:00Z'));
-    await t.mutation(internal.rotations.refreshCurrentWeek, {});
     expect((await t.query(api.rotations.list, { scope: 'current' }))[0].weekStartDate).toBe(
       '2026-10-26'
     );
@@ -88,14 +86,12 @@ describe('Listing rotations', () => {
 
   it('should return an empty array when the current week has no assignment', async () => {
     setSystemTime(new Date('2026-10-05T12:00:00Z'));
-    await t.mutation(internal.rotations.refreshCurrentWeek, {});
     expect(await t.query(api.rotations.list, { scope: 'current' })).toEqual([]);
     expect(await t.query(api.rotations.list, {})).toHaveLength(3);
   });
 
   it('should return an empty array after the last scheduled week', async () => {
     setSystemTime(new Date('2026-11-02T12:00:00Z'));
-    await t.mutation(internal.rotations.refreshCurrentWeek, {});
     expect(await t.query(api.rotations.list, {})).toEqual([]);
     expect(await t.query(api.rotations.list, { scope: 'current' })).toEqual([]);
     expect(await t.query(api.rotations.list, { scope: 'all' })).toHaveLength(3);
@@ -103,7 +99,6 @@ describe('Listing rotations', () => {
 
   it('should return empty arrays for an empty schedule', async () => {
     t = convexTest(schema, modules);
-    await t.mutation(internal.rotations.refreshCurrentWeek, {});
     for (const scope of ['upcoming', 'current', 'all'] as const) {
       expect(await t.query(api.rotations.list, { scope })).toEqual([]);
     }
@@ -126,7 +121,6 @@ describe('Listing rotations', () => {
 
   it('should preserve a caller’s local week when it differs from UTC', async () => {
     setSystemTime(new Date('2026-10-26T02:00:00Z'));
-    await t.mutation(internal.rotations.refreshCurrentWeek, {});
     const rows = await t.query(api.rotations.list, { weekStartDate: '2026-10-19' });
     expect(rows.map((row) => row.weekStartDate)).toEqual(['2026-10-19', '2026-10-26']);
     const current = await t.query(api.rotations.list, {
@@ -142,28 +136,5 @@ describe('Listing rotations', () => {
         'weekStartDate must be a Monday'
       );
     }
-  });
-
-  it('should require initialization only for scopes that use the server week', async () => {
-    await t.run(async (ctx) => {
-      const week = await ctx.db.query('rotationWeek').unique();
-      await ctx.db.delete(week!._id);
-    });
-    await expect(t.query(api.rotations.list, {})).rejects.toThrow('not initialized');
-    expect(await t.query(api.rotations.list, { scope: 'all' })).toHaveLength(3);
-    expect(await t.query(api.rotations.list, { weekStartDate: '2026-10-19' })).toHaveLength(2);
-    await t.mutation(internal.rotations.refreshCurrentWeek, {});
-    expect(await t.query(api.rotations.list, {})).toHaveLength(2);
-  });
-
-  it('should keep one week document across repeated refreshes and rollovers', async () => {
-    const before = await t.run((ctx) => ctx.db.query('rotationWeek').unique());
-    await t.mutation(internal.rotations.refreshCurrentWeek, {});
-    expect(await t.run((ctx) => ctx.db.query('rotationWeek').collect())).toEqual([before!]);
-    setSystemTime(new Date('2026-10-26T00:00:00Z'));
-    await t.mutation(internal.rotations.refreshCurrentWeek, {});
-    expect(await t.run((ctx) => ctx.db.query('rotationWeek').collect())).toEqual([
-      { ...before!, weekStartDate: '2026-10-26' },
-    ]);
   });
 });
