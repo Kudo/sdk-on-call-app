@@ -1,3 +1,4 @@
+import { useRotations } from '@/lib/use-rotations';
 import * as AC from '@bacons/apple-colors';
 import { useQuery } from 'convex/react';
 import { useMemo, useState } from 'react';
@@ -14,7 +15,7 @@ import { getStoredMemberId } from '@/lib/storage';
 
 export default function ShiftsRoute() {
   const members = useQuery(api.members.list);
-  const rotations = useQuery(api.rotations.list);
+  const rotations = useRotations();
   const [myId] = useState(() => getStoredMemberId());
   const insets = useSafeAreaInsets();
 

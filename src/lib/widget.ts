@@ -1,7 +1,6 @@
-import { useQuery } from 'convex/react';
+import { useRotations } from '@/lib/use-rotations';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { api } from '@convex/_generated/api';
 import { getStoredShifts, type Shift } from '@/lib/rotation';
 import { getStoredMemberId } from '@/lib/storage';
 import { buildNextShiftTimeline } from '@/lib/widget-timeline';
@@ -22,7 +21,7 @@ export function updateNextShiftWidget(myShifts: Shift[], now: Date = new Date())
  * Re-runs whenever the Convex rotation data or the stored identity changes.
  */
 export function useSyncNextShiftWidget(): void {
-  const rotations = useQuery(api.rotations.list);
+  const rotations = useRotations();
   const [myId] = useState(() => getStoredMemberId());
 
   useEffect(() => {

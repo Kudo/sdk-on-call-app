@@ -56,10 +56,40 @@ The underlying mutation is upsert, so calling `swap-week.ts` for a date that doe
 
 The app only uses public Convex queries. It does not call public mutations, actions, or HTTP write endpoints.
 
-All database writes go through scripts that call Convex internal mutations:
+All roster and assignment writes go through scripts that call Convex internal mutations:
 
 - `scripts/add-rotation.ts` writes one stored weekly rotation row per provided name (and adds any unknown names to the roster).
 - `scripts/swap-week.ts` calls the same internal mutation with a single name to reassign one week.
+
+## Rotation API
+
+The public `rotations:list` query accepts an optional `scope`:
+
+| Scope | Result |
+| --- | --- |
+| `upcoming` (default) | This week and all stored future weeks |
+| `current` | This week's assignment, as a one-element array or `[]` if unassigned |
+| `all` | All stored weeks, including past rotations |
+
+Results are ordered by week and include member names, but never Slack user IDs. No authentication is required. For example, fetch the current on-call assignment:
+
+```bash
+curl -sS 'https://robust-stingray-25.convex.cloud/api/query' \
+  -H 'Content-Type: application/json' \
+  -d '{"path":"rotations:list","args":{"scope":"current"},"format":"json"}'
+```
+
+Scopes use Monday–Sunday UTC weeks by default. An optional `weekStartDate` (`YYYY-MM-DD`, must be a Monday) anchors `current` or `upcoming` to a particular week. The app's `useRotations` hook passes the device's local Monday, preserving local calendar behavior, and updates it within 30 seconds while active or when the native app resumes. `all` ignores a valid week anchor.
+
+The default UTC week is stored in `rotationWeek`, so subscriptions invalidate when the week changes instead of relying on the wall clock inside a cached query. An hourly cron checks it at minute 0 and writes only when needed; rollover becomes visible when the Monday 00:00 UTC run completes. The cron also recovers a missing or stale week value.
+
+**Deployment:** after deploying this schema and code, initialize the week before using scope-only queries:
+
+```bash
+bunx convex run rotations:refreshCurrentWeek --prod
+```
+
+Omit `--prod` for a development deployment. Without initialization, scope-only `upcoming` and `current` queries report an error until the first hourly cron completes. Explicit week anchors and `all` work immediately. Existing clients that need history must now request `scope: 'all'`.
 
 ## Reminders
 
@@ -104,13 +134,13 @@ If a member does not have a Slack user ID, the reminder falls back to their disp
 
 ## Tests
 
-Pure logic is covered by `bun test`:
+Pure logic and Convex queries are covered by `bun test`:
 
 ```bash
 bun test
 ```
 
-The current suite lives in `src/lib/rotation.test.ts` and exercises week math (`getMondayOf`, `getWeekLabel`, `isSameWeek`) plus the rotation→shift transforms.
+Tests in `src/lib/` cover calendar math, shift transforms, widgets, and Slack message logic. `convex/rotations.test.ts` uses `convex-test` to cover query scopes, week rollover, timezone anchors, missing data, and public member privacy.
 
 ## Code Style
 
