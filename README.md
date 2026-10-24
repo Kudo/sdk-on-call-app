@@ -132,7 +132,7 @@ Pure logic and Convex queries are covered by `bun test`:
 bun test
 ```
 
-Tests in `scripts/` run the name-taking CLIs against a fake Convex CLI to cover member matching, duplicate prevention, and failures without touching a deployment. Tests in `src/lib/` cover calendar math, shift transforms, widgets, and Slack message logic. `convex/rotations.test.ts` uses `convex-test` to cover query scopes, week rollover, timezone anchors, missing data, and public member privacy.
+Tests in `src/lib/` cover calendar math, shift transforms, widgets, and Slack message logic. `convex/rotations.test.ts` uses `convex-test` to cover query scopes, week rollover, timezone anchors, missing data, and public member privacy.
 
 ## Code Style
 
