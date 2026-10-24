@@ -40,6 +40,8 @@ The command above writes exactly five weeks, one for each provided name. If the 
 The app only shows weeks present in the `rotations` table.
 The script calls internal Convex mutations, so roster and rotation setup is not exposed through the public app.
 
+All scripts that accept names (`add-rotation.ts`, `swap-week.ts`, and `set-slack-user.ts`) fetch the Convex member roster before writing. Matching ignores case and prefers an exact full name, then a unique partial name. For example, `Kudo`, `kudo`, or `CHIEN` resolves to `Kudo Chien` if that is the only match. If several members match, the script lists them and exits without writing; provide the full name to disambiguate. The rotation scripts add names with no match, while `set-slack-user.ts` requires an existing member. A failed roster lookup stops the script before any write.
+
 ## Cover For Someone
 
 When the scheduled person can't make a week and a teammate fills in, swap the assignment for that one week:
@@ -130,7 +132,7 @@ Pure logic and Convex queries are covered by `bun test`:
 bun test
 ```
 
-Tests in `src/lib/` cover calendar math, shift transforms, widgets, and Slack message logic. `convex/rotations.test.ts` uses `convex-test` to cover query scopes, week rollover, timezone anchors, missing data, and public member privacy.
+Tests in `scripts/` run the name-taking CLIs against a fake Convex CLI to cover member matching, duplicate prevention, and failures without touching a deployment. Tests in `src/lib/` cover calendar math, shift transforms, widgets, and Slack message logic. `convex/rotations.test.ts` uses `convex-test` to cover query scopes, week rollover, timezone anchors, missing data, and public member privacy.
 
 ## Code Style
 

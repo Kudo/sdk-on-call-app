@@ -1,4 +1,6 @@
 #!/usr/bin/env bun
+import { resolveMemberNames } from './lib/member-names';
+
 /**
  * Associates an existing rotation member with a Slack user ID for reminders.
  * Calls Convex internal mutations via `npx convex run`.
@@ -28,6 +30,10 @@ Options:
 
 Examples:
   bun ./scripts/set-slack-user.ts --name "Alice Chen" --slack-user-id U12345678
+
+Notes:
+  Names match the Convex roster case-insensitively, preferring exact names over unique partial matches.
+  Ambiguous and unknown names are rejected.
 `;
 
 function fail(message: string): never {
@@ -87,7 +93,13 @@ function convexRun(functionPath: string, args: Record<string, unknown>) {
   }
 }
 
-const { name, slackUserId } = parseArgs();
+const { name: inputName, slackUserId } = parseArgs();
+let name: string;
+try {
+  [name] = resolveMemberNames([inputName]);
+} catch (error) {
+  fail(error instanceof Error ? error.message : String(error));
+}
 
 console.log(`\nSetting Slack user ID for ${name}.`);
 convexRun('members:internalSetSlackUserId', {

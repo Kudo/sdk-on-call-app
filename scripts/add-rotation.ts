@@ -1,4 +1,6 @@
 #!/usr/bin/env bun
+import { resolveMemberNames } from './lib/member-names';
+
 /**
  * Adds or updates explicit weekly on-call assignments.
  * The --since date is adjusted to the nearest Monday if it isn't one.
@@ -33,6 +35,8 @@ Examples:
   bun ./scripts/add-rotation.ts --since 20260507 "Alice Chen" "Bob Wu"
 
 Notes:
+  Names match the Convex roster case-insensitively, preferring exact names over unique partial matches.
+  Ambiguous names are rejected; unmatched names are added to the roster.
   The number of written weeks equals the number of member names provided.
   The app only shows rotation weeks stored in Convex.
   This script writes to Convex only through the rotations:internalUpsertWeeks internal mutation.
@@ -126,7 +130,7 @@ function convexRun(functionPath: string, args: Record<string, unknown>) {
   }
 }
 
-const { sinceRaw, names } = parseArgs();
+const { sinceRaw, names: inputNames } = parseArgs();
 
 const rawDate = parseDate(sinceRaw);
 const startDate = toMonday(rawDate);
@@ -134,6 +138,13 @@ const startISO = toISODate(startDate);
 
 if (startDate.getTime() !== rawDate.getTime()) {
   console.log(`Note: ${sinceRaw} is not a Monday — adjusted start date to ${startISO}`);
+}
+
+let names: string[];
+try {
+  names = resolveMemberNames(inputNames, { allowNew: true });
+} catch (error) {
+  fail(error instanceof Error ? error.message : String(error));
 }
 
 console.log(`\nWriting ${names.length} stored weekly assignment(s):`);
