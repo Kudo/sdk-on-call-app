@@ -40,6 +40,8 @@ The command above writes exactly five weeks, one for each provided name. If the 
 The app only shows weeks present in the `rotations` table.
 The script calls internal Convex mutations, so roster and rotation setup is not exposed through the public app.
 
+All scripts that accept names (`add-rotation.ts`, `swap-week.ts`, and `set-slack-user.ts`) fetch the Convex member roster before writing. Matching ignores case and prefers an exact full name, then a unique partial name. For example, `Kudo`, `kudo`, or `CHIEN` resolves to `Kudo Chien` if that is the only match. If several members match, the script lists them and exits without writing; provide the full name to disambiguate. The rotation scripts add names with no match, while `set-slack-user.ts` requires an existing member. A failed roster lookup stops the script before any write.
+
 ## Cover For Someone
 
 When the scheduled person can't make a week and a teammate fills in, swap the assignment for that one week:

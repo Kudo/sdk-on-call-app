@@ -1,4 +1,6 @@
 #!/usr/bin/env bun
+import { resolveMemberNames } from './lib/member-names';
+
 /**
  * Reassigns a single weekly on-call slot to a different member —
  * useful when the scheduled person can't cover and someone else fills in.
@@ -41,7 +43,8 @@ Notes:
   The script reuses rotations:internalUpsertWeeks under the hood, which patches
   the existing row if the week is already in the table, or inserts a new one
   if it isn't. If you need to add a streak of new weeks, use add-rotation.ts.
-  If the named member isn't in the roster yet, they'll be added at the end.
+  Names match the Convex roster case-insensitively, preferring exact names over unique partial matches.
+  Ambiguous names are rejected; unmatched names are added at the end of the roster.
 `;
 
 function fail(message: string): never {
@@ -133,7 +136,7 @@ function convexRun(functionPath: string, args: Record<string, unknown>) {
   }
 }
 
-const { weekRaw, toName } = parseArgs();
+const { weekRaw, toName: inputName } = parseArgs();
 
 const rawDate = parseDate(weekRaw);
 const monday = mondayOfWeekContaining(rawDate);
@@ -141,6 +144,13 @@ const mondayISO = toISODate(monday);
 
 if (monday.getTime() !== rawDate.getTime()) {
   console.log(`Note: ${weekRaw} is not a Monday — resolved to week starting ${mondayISO}`);
+}
+
+let toName: string;
+try {
+  [toName] = resolveMemberNames([inputName], { allowNew: true });
+} catch (error) {
+  fail(error instanceof Error ? error.message : String(error));
 }
 
 console.log(`\nReassigning week ${mondayISO} to ${toName}.`);
